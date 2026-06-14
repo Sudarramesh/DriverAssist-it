@@ -196,7 +196,7 @@ export default function App() {
               </li>
               <li className="flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-blue-500" />
-                <span>+1 (800) 555-ROAD (7623)</span>
+                <span>+91(123) 456-7890</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <HelpCircle className="h-3.5 w-3.5 text-blue-500" />
