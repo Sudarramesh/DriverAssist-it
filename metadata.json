@@ -1,0 +1,6 @@
+{
+  "name": "DriverAssist-it",
+  "description": "Job board, vacancy manager, active tracking simulator, and career analytics for professional drivers and employers.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
