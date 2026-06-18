@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Truck, Briefcase, PlusCircle, Compass, BarChart3, Layers, User, MapPin } from 'lucide-react';
+import { useAuth } from "../context/AuthContext";
+import type { User as FirebaseUser } from 'firebase/auth';
 import { UserProfile } from '../types';
 import UserProfileModal from './UserProfileModal';
 
@@ -11,6 +13,11 @@ interface NavbarProps {
 }
 
 export default function Navbar({ activeTab, setActiveTab, userProfile, onUpdateProfile }: NavbarProps) {
+  const { user, login, logout } = useAuth() as {
+    user: FirebaseUser | null;
+    login: () => Promise<void>;
+    logout: () => Promise<void>;
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navItems = [
@@ -94,6 +101,49 @@ export default function Navbar({ activeTab, setActiveTab, userProfile, onUpdateP
             </button>
           )}
 
+           {/* Google Authentication Button */}
+           {user ? (
+             <button 
+               onClick={async () => {
+                 try {
+                   await logout();
+                 } catch (e) {
+                   console.error('Logout failed', e);
+                 }
+                 onUpdateProfile({
+                   name: '',
+                   email: '',
+                   phone: '',
+                   licenseType: 'LMV Badge',
+                   locationName: 'Not Logged In',
+                   coordinates: null,
+                   isLoggedIn: false,
+                 });
+                 setIsModalOpen(false);
+               }}
+               className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer focus:outline-none"
+             >
+               <span>Logout</span>
+             </button>
+           ) : (
+             <button 
+               onClick={async () => {
+                 try {
+                   await login();
+                 } catch (e) {
+                   console.error('Login failed', e);
+                 }
+                onUpdateProfile({
+                  ...userProfile,
+                  isLoggedIn: true,
+                });
+                 setIsModalOpen(true);
+               }}
+               className="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer focus:outline-none"
+             >
+               <span>Sign in with Google</span>
+             </button>
+           )}
           <div className="hidden lg:flex items-center space-x-1.5 border-l border-slate-800 pl-3">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

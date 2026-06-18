@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from "../context/AuthContext";
 import { UserProfile } from '../types';
 import { 
   X, 
@@ -28,6 +29,7 @@ export default function UserProfileModal({
   userProfile, 
   onUpdateProfile 
 }: UserProfileModalProps) {
+  const { user } = useAuth();
   const [name, setName] = useState(userProfile.name);
   const [email, setEmail] = useState(userProfile.email);
   const [phone, setPhone] = useState(userProfile.phone);
@@ -173,6 +175,23 @@ export default function UserProfileModal({
 
         {/* Scrollable Content */}
         <form onSubmit={handleSave} className="overflow-y-auto p-6 space-y-6 flex-1">
+          
+          {/* Google User Info Display */}
+          {user && (
+            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-3">
+              <div className="flex items-center space-x-4">
+                <img 
+                  src={user?.photoURL ?? ""} 
+                  alt="profile"
+                  className="h-16 w-16 rounded-full border-2 border-blue-300 object-cover"
+                />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold text-slate-900 truncate">{user?.displayName}</h3>
+                  <p className="text-xs text-slate-600 truncate">{user?.email}</p>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Geolocation Detection Controller */}
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
