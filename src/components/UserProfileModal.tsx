@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
 import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import { ref, get } from "firebase/database";
+import { database } from "../firebase/firebase";
 import { UserProfile } from '../types';
 import { 
   X, 
@@ -39,6 +41,31 @@ export default function UserProfileModal({
   
   const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [geoMessage, setGeoMessage] = useState('');
+
+  // Optional: fetch latest profile snapshot for read-only display
+  useEffect(() => {
+    let mounted = true;
+    const fetchUser = async () => {
+      if (!user) return;
+      try {
+        const snapshot = await get(ref(database, `users/${user.uid}`));
+        if (!mounted) return;
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // merge any fetched values into local state when available
+          if (data.name) setName(data.name);
+          if (data.email) setEmail(data.email);
+          if (data.photoURL && !user?.photoURL) {
+            /* noop: keep auth photo if present */
+          }
+        }
+      } catch (e) {
+        // ignore fetch errors; profile edits happen locally
+      }
+    };
+    fetchUser();
+    return () => { mounted = false; };
+  }, [user]);
 
   if (!isOpen) return null;
 
@@ -109,6 +136,7 @@ export default function UserProfileModal({
         finalCoords = match;
       }
     }
+
 
     onUpdateProfile({
       name,
